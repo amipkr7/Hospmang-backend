@@ -12,11 +12,13 @@ import appointmentRouter from './router/appointmentRouter.js';
 const app=express();
 config({path:"./config/config.env"})
 
-app.use(cors({
-    origin:[process.env.FRONTEND_URL,process.env.DASHBOARD_URL],
-    methods:['GET','POST','DELETE','PUT'],
-    credentials:true
-}))
+// app.use(cors({
+//     origin:[process.env.FRONTEND_URL,process.env.DASHBOARD_URL],
+//     methods:['GET','POST','DELETE','PUT'],
+//     credentials:true
+// }))
+
+app.use(cors());
 
 app.use(cookieParser()); 
 app.use(express.json());

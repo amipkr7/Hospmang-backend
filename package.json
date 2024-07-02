@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "build": "npm install",
-    "start": "node serevr.js"
+    "start": "node server.js"
   },
   "keywords": [],
   "author": "",

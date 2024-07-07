@@ -21,6 +21,6 @@ router.get("/patient/me",getUserDetails);   //may be possible error
 router.get("/admin/logout/me",isAdminAuthenticated,adminlogout);
 router.get("/patient/logout/me",patientlogout); //may be possible error
 router.post("/doctor/add",isAdminAuthenticated,addNewDoctor);
-router.get("/doctor/getall",isAdminAuthenticated,getAllDoctors)
+router.get("/doctor/getall",getAllDoctors)
 
 export default router

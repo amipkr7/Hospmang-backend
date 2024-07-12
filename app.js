@@ -60,7 +60,8 @@ app.get('/health', async (req, res) => {
 app.use('/api/v1/message', messageRouter);
 app.use('/api/v1/user', userRouter);
 app.use('/api/v1/appointment', appointmentRouter);
-app.use('/community',communityController);
+// app.use('/community',communityController);
+communityController();
 
 dbConnection();
 

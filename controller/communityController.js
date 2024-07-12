@@ -2,7 +2,7 @@ import express from 'express';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
 
-export const communityController = () => {
+ const communityController = () => {
     const app = express();
     const port = process.env.PORT_SOCKET || 5001;
 
@@ -51,4 +51,6 @@ export const communityController = () => {
         console.error('Server Error:', error);
     });
 }
+
+export default communityController;
 

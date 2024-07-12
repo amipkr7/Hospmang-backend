@@ -9,6 +9,8 @@ import messageRouter from './router/messageRouter.js';
 import { errorMiddleware } from './middlwares/error.js'; // Fixed typo in middlewares
 import userRouter from './router/userRouter.js';
 import appointmentRouter from './router/appointmentRouter.js';
+import { communityController } from './controller/communityController.js';
+
 
 const app = express();
 config({ path: './config/config.env' });
@@ -59,6 +61,7 @@ app.get('/health', async (req, res) => {
 app.use('/api/v1/message', messageRouter);
 app.use('/api/v1/user', userRouter);
 app.use('/api/v1/appointment', appointmentRouter);
+app.use('/community',communityController);
 
 dbConnection();
 

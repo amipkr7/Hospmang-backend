@@ -9,8 +9,7 @@ import messageRouter from './router/messageRouter.js';
 import { errorMiddleware } from './middlwares/error.js'; // Fixed typo in middlewares
 import userRouter from './router/userRouter.js';
 import appointmentRouter from './router/appointmentRouter.js';
-import { communityController } from './controller/communityController.js';
-
+import communityController from './controller/communityController.js';
 
 const app = express();
 config({ path: './config/config.env' });

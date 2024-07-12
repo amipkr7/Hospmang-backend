@@ -1,12 +1,11 @@
 import express from 'express';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
-import { config } from 'dotenv';
 
-// Load environment variables from .env file
-config({ path: './config/config.env' });
 
 // Initialize Express app
+
+const communityController=()=>{
 const app = express();
 const port = process.env.PORT_SOCKET || 5001;
 
@@ -49,3 +48,6 @@ communityNamespace.on("connection", (socket) => {
 server.listen(port, () => {
     console.log(`Server is listening at http://localhost:${port}`);
 });
+}
+
+export default communityController;

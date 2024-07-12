@@ -9,10 +9,12 @@ import messageRouter from './router/messageRouter.js';
 import { errorMiddleware } from './middlwares/error.js'; // Fixed typo in middlewares
 import userRouter from './router/userRouter.js';
 import appointmentRouter from './router/appointmentRouter.js';
-import communityController from './controller/communityController.js';
+
+// import communityController from './controller/communityController.js';
 
 const app = express();
 config({ path: './config/config.env' });
+
 
 app.use(cors({
   origin: [process.env.FRONTEND_URL, process.env.DASHBOARD_URL],
@@ -60,8 +62,11 @@ app.get('/health', async (req, res) => {
 app.use('/api/v1/message', messageRouter);
 app.use('/api/v1/user', userRouter);
 app.use('/api/v1/appointment', appointmentRouter);
-// app.use('/community',communityController);
-communityController();
+
+
+
+
+
 
 dbConnection();
 

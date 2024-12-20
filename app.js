@@ -1,43 +1,39 @@
-import express from "express";
-import { config } from "dotenv";
-import cors from "cors";
-import cookieParser from "cookie-parser";
-import fileUpload from "express-fileupload";
-import Razorpay from "razorpay"; // Import Razorpay as a default import
-import { dbConnection } from "./database/database.js";
-import messageRouter from "./router/messageRouter.js";
-import { errorMiddleware } from "./middlewares/error.js"; // Fixed typo in middlewares
-import userRouter from "./router/userRouter.js";
-import appointmentRouter from "./router/appointmentRouter.js";
+import express from 'express';
+import { config } from 'dotenv';
+import cors from 'cors';
+import cookieParser from 'cookie-parser';
+import fileUpload from 'express-fileupload';
+import Razorpay from 'razorpay'; // Import Razorpay as a default import
+import { dbConnection } from './database/database.js';
+import messageRouter from './router/messageRouter.js';
+import { errorMiddleware } from './middlewares/error.js'; // Fixed typo in middlewares
+import userRouter from './router/userRouter.js';
+import appointmentRouter from './router/appointmentRouter.js';
 import { createServer } from "http";
 import { Server } from "socket.io";
 
 // Load environment variables
-config({ path: "./config/config.env" });
+config({ path: './config/config.env' });
 
 const app = express();
 
 // Middleware Configuration
-app.use(
-  cors({
-    origin: [process.env.FRONTEND_URL, process.env.DASHBOARD_URL],
-    methods: ["GET", "POST", "DELETE", "PUT"],
-    credentials: true,
-  })
-);
+app.use(cors({
+  origin: [process.env.FRONTEND_URL, process.env.DASHBOARD_URL],
+  methods: ['GET', 'POST', 'DELETE', 'PUT'],
+  credentials: true
+}));
 app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(
-  fileUpload({
-    useTempFiles: true,
-    tempFileDir: "/tmp/",
-  })
-);
+app.use(fileUpload({
+  useTempFiles: true,
+  tempFileDir: '/tmp/'
+}));
 
 // Razorpay Configuration
-console.log("Razorpay Key ID:", process.env.RAZ_KEY_ID);
-console.log("Razorpay Secret Key:", process.env.RAZ_SECRET_KEY);
+console.log('Razorpay Key ID:', process.env.RAZ_KEY_ID);
+console.log('Razorpay Secret Key:', process.env.RAZ_SECRET_KEY);
 
 const razorpay = new Razorpay({
   key_id: process.env.RAZ_KEY_ID,
@@ -45,13 +41,11 @@ const razorpay = new Razorpay({
 });
 
 // Payment Endpoint
-app.post("/create-order", async (req, res) => {
+app.post('/create-order', async (req, res) => {
   const { amount, currency, receipt } = req.body;
 
   if (!amount || !currency || !receipt) {
-    return res
-      .status(400)
-      .json({ error: "Amount, currency, and receipt are required." });
+    return res.status(400).json({ error: 'Amount, currency, and receipt are required.' });
   }
 
   const options = {
@@ -65,30 +59,28 @@ app.post("/create-order", async (req, res) => {
     res.status(201).json(order);
   } catch (error) {
     console.error("Error creating Razorpay order:", error);
-    res
-      .status(500)
-      .json({ error: "Failed to create order", details: error.message });
+    res.status(500).json({ error: 'Failed to create order', details: error.message });
   }
 });
 
 // Health Check Endpoint
-app.get("/health", (req, res) => {
-  res.status(200).send({ message: "Health OK!" });
+app.get('/health', (req, res) => {
+  res.status(200).send({ message: 'Health OK!' });
 });
 
 // Routes
-app.use("/api/v1/message", messageRouter);
-app.use("/api/v1/user", userRouter);
-app.use("/api/v1/appointment", appointmentRouter);
+app.use('/api/v1/message', messageRouter);
+app.use('/api/v1/user', userRouter);
+app.use('/api/v1/appointment', appointmentRouter);
 
 // Socket.io Configuration
 const server = createServer(app);
 const io = new Server(server, {
   cors: {
     origin: "*",
-    methods: ["GET", "PUT", "POST", "DELETE"],
-    credentials: true,
-  },
+    methods: ['GET', 'PUT', 'POST', 'DELETE'],
+    credentials: true
+  }
 });
 
 io.on("connection", (socket) => {

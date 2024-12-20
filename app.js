@@ -90,8 +90,8 @@ io.on("connection", (socket) => {
 });
 
 const PORT = process.env.PORT || 5000;
-server.listen(process.env.PORT_SCOKET, () => {
-  console.log(`Server is listening at http://localhost:${PORT}`);
+server.listen(process.env.PORT_SOCKET, () => {
+  console.log(`Server is listening at ${process.env.PORT_SOCKET}`);
 });
 
 dbConnection();

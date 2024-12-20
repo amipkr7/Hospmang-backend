@@ -29,30 +29,33 @@ app.use(fileUpload({
   tempFileDir: '/tmp/'
 }));
 
-console.log('Razorpay Key ID:', process.env.RAZ_KEY_ID);
-console.log('Razorpay Secret Key:', process.env.RAZ_SECRET_KEY);
-
-const razorpay = new Razorpay({
-  key_id: process.env.RAZ_KEY_ID,
-  key_secret: process.env.RAZ_SECRET_KEY,
-});
-
-app.post('/create-order', async (req, res) => {
+app.post("/create-order", async (req, res) => {
   const { amount, currency, receipt } = req.body;
 
+  // Validate input
+  if (!amount || !currency || !receipt) {
+    return res
+      .status(400)
+      .json({ error: "Amount, currency, and receipt are required." });
+  }
+
   const options = {
-    amount: amount * 100, // amount in the smallest currency unit
+    amount: amount * 100, // Convert to smallest currency unit
     currency,
     receipt,
   };
 
   try {
     const order = await razorpay.orders.create(options);
-    res.json(order);
+    return res.status(201).json(order); // Make sure to return the correct response format
   } catch (error) {
-    res.status(500).json(error);
+    console.error("Error creating Razorpay order:", error);
+    return res
+      .status(500)
+      .json({ error: "Failed to create order", details: error.message });
   }
 });
+
 
 app.get('/health', async (req, res) => {
   res.send({

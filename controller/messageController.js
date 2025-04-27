@@ -10,7 +10,7 @@ export const sendMessage= catchAsyncError(async (req,res,next)=>{
     console.log(typeof(phone));
     
 
-    if(!firstName || !lastName || !email || !phone||!message)
+    if(!firstName )
     {
         // return res.status(400).json({
         //     success:false,

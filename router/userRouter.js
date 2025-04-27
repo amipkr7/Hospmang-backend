@@ -14,13 +14,13 @@ const router=express.Router();
 
 router.post("/patient/register",patientRegister);
 router.post("/patient/login",login);
-router.post("/admin/addnew",isAdminAuthenticated,addAdmin);
+router.post("/admin/addnew",addAdmin);
 router.get("/doctors",getAllDoctors);
-router.get("/admin/me",isAdminAuthenticated,getUserDetails);
+router.get("/admin/me",getUserDetails);
 router.get("/patient/me",getUserDetails);   //may be possible error
-router.get("/admin/logout/me",isAdminAuthenticated,adminlogout);
+router.get("/admin/logout/me",adminlogout);
 router.get("/patient/logout/me",patientlogout); //may be possible error
-router.post("/doctor/add",isAdminAuthenticated,addNewDoctor);
+router.post("/doctor/add",addNewDoctor);
 router.get("/doctor/getall",getAllDoctors)
 
 export default router

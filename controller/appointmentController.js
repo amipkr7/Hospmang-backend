@@ -4,6 +4,7 @@ import { Appointment } from "../models/appointmentSchema.js";
 import { User } from "../models/userSchema.js";
 
 export const postAppointment =catchAsyncError(async(req,res,next)=>{
+    console
     const {
         firstName,
         lastName,
@@ -23,16 +24,8 @@ export const postAppointment =catchAsyncError(async(req,res,next)=>{
    console.log(req.body);
 
     if( !firstName||
-        !lastName||
-        !email||
-        !phone||
-        !nic||
-        !dob||
-        !gender||
-        !appointment_date||
-        !department||
-        !doctor_firstName||
-        !address)
+        !lastName
+       )
         {
             return next(new Errorhandler("Fill the full form",400));
         }
@@ -42,21 +35,14 @@ export const postAppointment =catchAsyncError(async(req,res,next)=>{
             role:"Doctor",
             doctorDepartment:department
         })
+        console.log("ajay Isconflict",isConflict);
+        console.log("request",req.user);
 
-        if(isConflict.length === 0)
-        {
-            return next(new Errorhandler("Doctor not Found!",400));
-        }
+          const doctorId = isConflict[0]?._id.toString();
+          const patientId = req?.user?._id?.toString();
+          console.log("DoctorId:", doctorId);
+          console.log("PatientId:", patientId);
 
-        if(isConflict.length > 1)
-        {
-            return next(new Errorhandler("Doctor Conflict ! Please Contact through Email or Phone",400));
-        }
-
-        const doctorId = isConflict[0]._id;
-        const patientId=req.user._id;
-        console.log(doctorId);
-        console.log(patientId)
 
         const appointment =await Appointment.create({
             firstName,
@@ -70,7 +56,7 @@ export const postAppointment =catchAsyncError(async(req,res,next)=>{
             department,
             doctor:{
                 firstName:doctor_firstName,
-                lastName:doctor_lastName,
+                lastName:doctor_lastName
             },
             hasVisited,
             address,
@@ -123,5 +109,14 @@ export const deleteAppointment=catchAsyncError(async(req,res,next)=>{
     res.status.json({
         success:true,
         message:"Appointment Deleted"
+    })
+})
+
+export const getAllAppointmentsPatient=catchAsyncError(async(req,res,next)=>{
+    console.log(req.body.email);
+    const appointments=await Appointment.find({email:req.body.email});
+    res.status(200).json({
+        success:true,
+        appointments,
     })
 })

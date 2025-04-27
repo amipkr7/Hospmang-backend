@@ -5,6 +5,6 @@ import { isAdminAuthenticated } from '../middlwares/auth.js';
 const router=express.Router();
 
 router.post('/send',sendMessage);
-router.get('/getmessage',isAdminAuthenticated,getAllMessages);
+router.get('/getmessage',getAllMessages);
 
 export default router

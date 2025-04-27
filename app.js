@@ -1,104 +1,88 @@
-import express from 'express';
-import { config } from 'dotenv';
-import cors from 'cors';
-import cookieParser from 'cookie-parser';
-import fileUpload from 'express-fileupload';
-import Razorpay from 'razorpay'; // Import Razorpay as a default import
-import { dbConnection } from './database/database.js';
-import messageRouter from './router/messageRouter.js';
-import { errorMiddleware } from './middlwares/error.js'; // Fixed typo in middlewares
-import userRouter from './router/userRouter.js';
-import appointmentRouter from './router/appointmentRouter.js';
-import { createServer } from "http";
-import { Server } from "socket.io";
+import express from "express";
+import { config } from "dotenv";
+import cors from "cors";
+import cookieParser from "cookie-parser";
+import fileUpload from "express-fileupload";
+import Razorpay from "razorpay"; // Import Razorpay
+import { dbConnection } from "./database/database.js";
+import messageRouter from "./router/messageRouter.js";
+import userRouter from "./router/userRouter.js";
+import appointmentRouter from "./router/appointmentRouter.js";
+import { errorMiddleware } from "./middlwares/error.js";
+// import Appoinment from "./models/appointmentSchema.js";
+import nodemailer from "nodemailer";
+
 
 const app = express();
-config({ path: './config/config.env' });
+config({ path: "./config/config.env" }); // Load environment variables
 
-app.use(cors({
-  origin: [process.env.FRONTEND_URL, process.env.DASHBOARD_URL],
-  methods: ['GET', 'POST', 'DELETE', 'PUT'],
-  credentials: true
-}));
+console.log("Environment Variables:", process.env.FRONTEND_URL,process.env.DASHBOARD_URL); // Log environment variables for debugging
+// Middleware Setup
+app.use(
+  cors({
+    origin: [process.env.FRONTEND_URL, process.env.DASHBOARD_URL],
+    methods: ["GET", "POST", "DELETE", "PUT"],
+    credentials: true,
+  })
+);
 
 app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(fileUpload({
-  useTempFiles: true,
-  tempFileDir: '/tmp/'
-}));
+app.use(
+  fileUpload({
+    useTempFiles: true,
+    tempFileDir: "/tmp/",
+  })
+);
 
+// Razorpay Instance Setup
+const razorpay = new Razorpay({
+  key_id: process.env.RAZ_KEY_ID, // Key ID from Razorpay Dashboard
+  key_secret: process.env.RAZ_SECRET_KEY, // Secret Key from Razorpay Dashboard
+});
+
+// Health Check Endpoint
+app.get("/health", async (req, res) => {
+  res.send({ message: "Health OK!" });
+});
+
+// Razorpay Order Creation Endpoint
 app.post("/create-order", async (req, res) => {
   const { amount, currency, receipt } = req.body;
 
-  // Validate input
-  if (!amount || !currency || !receipt) {
-    return res
-      .status(400)
-      .json({ error: "Amount, currency, and receipt are required." });
-  }
-
-  const options = {
-    amount: amount * 100, // Convert to smallest currency unit
-    currency,
-    receipt,
-  };
-
   try {
-    const order = await razorpay.orders.create(options);
-    return res.status(201).json(order); // Make sure to return the correct response format
+
+    // Appointment.save({ amount, currency, receipt });
+    const options = {
+      amount: amount * 100, // Convert amount to smallest currency unit
+      currency,
+      receipt,
+    };
+
+    const order = await razorpay.orders.create(options); // Create Razorpay order
+    
+    res.status(201).json(order); // Respond with order details
   } catch (error) {
     console.error("Error creating Razorpay order:", error);
-    return res
-      .status(500)
-      .json({ error: "Failed to create order", details: error.message });
+    res.status(500).json({ message: "Failed to create order", error });
   }
 });
 
+// Route Integrations
+app.use("/api/v1/message", messageRouter);
+app.use("/api/v1/user", userRouter);
+app.use("/api/v1/appointment", appointmentRouter);
 
-app.get('/health', async (req, res) => {
-  res.send({
-    message: 'Health OK!'
-  });
-});
-
-app.use('/api/v1/message', messageRouter);
-app.use('/api/v1/user', userRouter);
-app.use('/api/v1/appointment', appointmentRouter);
-
-const server = createServer(app);
-
-const io = new Server(server, {
-  cors: {
-    origin: "*",
-    methods: ['GET', 'PUT', 'POST', 'DELETE'],
-    credentials: true
-  }
-});
-
-io.on("connection", (socket) => {
-  console.log("User Connected:", socket.id);
-
-  socket.on("message", (message) => {
-    console.log("Received message:", message);
-    socket.broadcast.emit("chatMessage", { id: socket.id, message: message });
-  });
-
-  socket.on("disconnect", () => {
-    console.log("User Disconnected:", socket.id);
-  });
-
-  socket.emit("welcome", "Welcome to the server!");
-});
-
-const PORT = process.env.PORT || 5000;
-server.listen(process.env.PORT_SOCKET, () => {
-  console.log(`Server is listening at ${process.env.PORT_SOCKET}`);
-});
-
+// Database Connection
 dbConnection();
+
+// Error Middleware
 app.use(errorMiddleware);
 
+app.listen(process.env.PORT, () => {
+  console.log(`Server is running on port ${process.env.PORT}`);
+});
 
-export default app;
+// Server Export
+// export default app;

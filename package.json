@@ -2,18 +2,18 @@
   "name": "backend",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "app.js",
   "type": "module",
   "scripts": {
     "build": "npm install",
-    "start": "nodemon server.js"
+    "start": "node server.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
     "bcrypt": "^5.1.1",
-    "cloudinary": "^2.1.0",
+    "cloudinary": "^2.6.0",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
@@ -21,9 +21,8 @@
     "express-fileupload": "^1.5.0",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.3.0",
-    "nodemon": "^3.1.4",
-    "razorpay": "^2.9.4",
-    "socket.io": "^4.7.5",
+    "nodemailer": "^6.10.1",
+    "razorpay": "^2.9.5",
     "validator": "^13.11.0"
   },
   "devDependencies": {

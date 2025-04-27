@@ -50,6 +50,7 @@ export const patientRegister = catchAsyncError(async (req, res, next) => {
 
   
   export const login = catchAsyncError(async (req, res, next) => {
+    console.log("login")
     const { email, password, confirmPassword, role } = req.body;
     if (!email || !password || !confirmPassword || !role) {
       return next(new Errorhandler("Please Fill Full Form!", 400));
@@ -156,6 +157,7 @@ export const patientRegister = catchAsyncError(async (req, res, next) => {
   })
 
   export const addNewDoctor = catchAsyncError(async(req,res,next)=>{
+    console.log("Add New Doctor")
     if(!req.files || Object.keys(req.files).length===0)
     {
       return next(new Errorhandler("Doctor Avatar Required",400));
@@ -167,6 +169,14 @@ export const patientRegister = catchAsyncError(async (req, res, next) => {
     {
       return next(new Errorhandler("File Format Not Supported!",400));
     }
+
+    console.log("Doc Avatar:",docAvatar.mimetype);
+
+    cloudinary.config({
+      cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+      api_key: process.env.CLOUDINARY_API_KEY,
+      api_secret: process.env.CLOUDINARY_API_SECRET,
+    });
 
     const {firstName,
             lastName,
@@ -192,6 +202,7 @@ export const patientRegister = catchAsyncError(async (req, res, next) => {
        }
 
        const isRegistered =await User.findOne({email});
+       console.log("isRegistered",isRegistered);
        if(isRegistered){
         return next(new Errorhandler(`${isRegistered.role} already registered with this email`,400));
        }
@@ -199,6 +210,7 @@ export const patientRegister = catchAsyncError(async (req, res, next) => {
        const cloudinaryResponse=await cloudinary.uploader.upload(
         docAvatar.tempFilePath
        )
+       console.log("Cloudinary Response:", cloudinaryResponse);
 
        if(!cloudinaryResponse || cloudinaryResponse.error)
        {
